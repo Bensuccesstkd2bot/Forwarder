@@ -6,7 +6,7 @@ from telegram import Update
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-FORWARD_MAP = { -1004427378609: -1004427378589 }
+FORWARD_MAP = { -10044443414794: -1004427378589 }
 
 async def forward(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.channel_post or update.message
