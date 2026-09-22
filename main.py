@@ -2,7 +2,7 @@
 import os
 import asyncio
 import logging
-from http.server import HTTPServer, BaseHandler
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
 from telegram import Bot
 
@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 MY_ID = os.getenv("MY_TELEGRAM_ID") or os.getenv("TELEGRAM_ID") or "7534036406"
 
-class Handler(BaseHandler):
+class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
