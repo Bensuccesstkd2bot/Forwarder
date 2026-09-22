@@ -1,35 +1,42 @@
+
 import os
 import asyncio
 import logging
+from http.server import HTTPServer, BaseHandler
+import threading
 from telegram import Bot
-from telegram.error import TelegramError
 
 logging.basicConfig(level=logging.INFO)
-
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-MY_TELEGRAM_ID = os.getenv("MY_TELEGRAM_ID") or os.getenv("TELEGRAM_ID") or "7534036406"
+MY_ID = os.getenv("MY_TELEGRAM_ID") or os.getenv("TELEGRAM_ID") or "7534036406"
 
-async def main():
+class Handler(BaseHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is LIVE")
+    def log_message(self, *args):
+        pass
+
+def start_web():
+    port = int(os.getenv("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), Handler)
+    print(f"Web server on {port}")
+    server.serve_forever()
+
+async def send_live():
     if not BOT_TOKEN:
-        print("BOT_TOKEN missing!")
+        print("No BOT_TOKEN")
         return
-    
     bot = Bot(token=BOT_TOKEN)
-    
-    # Test message
     try:
-        chat_id = int(MY_TELEGRAM_ID)
-        await bot.send_message(
-            chat_id=chat_id,
-            text="✅ FINAL V4 LIVE\n\n🔷 SOL + 🟡 BNB + 🔷 BASE + 🔷 ETH\n\nBot is hunting gems now...\nFilters: LP > $5k | Holders > 20 | No Honeypot\n\nWaiting for new tokens..."
-        )
-        print(f"Sent LIVE message to {chat_id}")
+        await bot.send_message(chat_id=int(MY_ID), text="✅ FINAL V4 LIVE\n\n🔷 SOL + 🟡 BNB + 🔷 BASE + 🔷 ETH\nBot is hunting gems now...\nWaiting for new tokens...")
+        print("LIVE sent!")
     except Exception as e:
-        print(f"Error sending: {e}")
-    
-    # Keep alive for Render
-    while True:
-        await asyncio.sleep(3600)
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    threading.Thread(target=start_web, daemon=True).start()
+    asyncio.run(send_live())
+    while True:
+        asyncio.run(asyncio.sleep(3600))
